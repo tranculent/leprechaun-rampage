@@ -22,7 +22,6 @@ public class PlayerInitializer : MonoBehaviour
     private void InitializeUpgrade(string upgradeKey)
     {
         PermanentUpgrade upgrade = LoadUpgradeData(upgradeKey);
-        Debug.Log(upgrade._currentPoints);
         int upgradeIncreaseMaxValue = (upgrade._currentPoints + 1) * 10; // +1 because it starts from zero
         Player playerComponent = player.GetComponent<Player>();
         PlayerMovement playerMovementComponent = player.GetComponent<PlayerMovement>();
