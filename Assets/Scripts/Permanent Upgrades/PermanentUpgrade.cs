@@ -7,6 +7,7 @@ public class PermanentUpgrade
     public int _currentPoints;
     public int _costToUpgrade;
     public int _costIncreasePerUpgrade;
+    public int _upgradeAmount = 0;
 
     private int availableCoins = PlayerPrefs.GetInt(PlayerPrefsConsts.PlayerCurrency);
 

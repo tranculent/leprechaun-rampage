@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,86 +9,70 @@ public class PermanentUpgradeManager : MonoBehaviour
 
     void Start()
     {
-        // Check if upgrade data exists in PlayerPrefs, if not, initialize it
-        InitializeMaxHealthUpgrade();
-        InitializeMaxSpeedUpgrade();
-        InitializeMaxDamageUpgrade();
-    }
-
-    private void InitializeMaxHealthUpgrade()
-    {
-        PlayerPrefs.DeleteKey(PlayerPrefsConsts.MaxHealthPermanentUpgrade);
         PlayerPrefs.SetInt(PlayerPrefsConsts.PlayerCurrency, 8000);
-        if (!PlayerPrefs.HasKey(PlayerPrefsConsts.MaxHealthPermanentUpgrade))
-        {
-            PermanentUpgrade maxHealthUpgrade = new PermanentUpgrade
-            {
-                _upgradeKey = PlayerPrefsConsts.MaxHealthPermanentUpgrade,
-                _maximumPointsToUpgrade = 10,
-                _currentPoints = 0,
-                _costToUpgrade = 100,
-                _costIncreasePerUpgrade = 200
-            };
 
-            string maxHealthUpgradeJson = JsonUtility.ToJson(maxHealthUpgrade);
-            PlayerPrefs.SetString(PlayerPrefsConsts.MaxHealthPermanentUpgrade, maxHealthUpgradeJson);
-        }
+        InitializePermanentUpgrade(PlayerPrefsConsts.MaxHealthPermanentUpgrade,
+            10, 0, 100, 200, "MaxHealthUpgradeNameText", "MaxHealthUpgradeAmount", "MaxHealthProgressBarImage", "MaxHealthCostText", "MaxHealthUpgradeButton");
 
-        // Set UI elements for Max Health Upgrade
-        upgradeUI.SetUIElements(PlayerPrefsConsts.MaxHealthPermanentUpgrade,
-            GameObject.Find("MaxHealthUpgradeNameText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxHealthProgressBarImage").GetComponent<Image>(),
-            GameObject.Find("MaxHealthCostText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxHealthUpgradeButton").GetComponent<Button>());
+        InitializePermanentUpgrade(PlayerPrefsConsts.MaxSpeedPermanentUpgrade,
+            10, 0, 100, 300, "MaxSpeedUpgradeNameText", "MaxSpeedUpgradeAmount", "MaxSpeedProgressBarImage", "MaxSpeedCostText", "MaxSpeedUpgradeButton");
+
+        InitializePermanentUpgrade(PlayerPrefsConsts.MaxDamagePermanentUpgrade,
+            10, 0, 100, 300, "MaxDamageUpgradeNameText", "MaxDamageUpgradeAmount", "MaxDamageProgressBarImage", "MaxDamageCostText", "MaxDamageUpgradeButton");
+
+        InitializePermanentUpgrade(PlayerPrefsConsts.MaxReloadSpeedPermanentUpgrade,
+            4, 0, 100, 500, "MaxReloadSpeedUpgradeNameText", "MaxReloadSpeedAmount", "MaxReloadSpeedProgressBarImage", "MaxReloadSpeedCostText", "MaxReloadSpeedUpgradeButton");
+
+        InitializePermanentUpgrade(PlayerPrefsConsts.AmmoCapacityPermanentUpgrade,
+            3, 0, 300, 500, "AmmoCapacityUpgradeNameText", "AmmoCapacityAmount", "AmmoCapacityProgressBarImage", "AmmoCapacityCostText", "AmmoCapacityUpgradeButton");
+
+        InitializePermanentUpgrade(PlayerPrefsConsts.CurrencyEarningPermanentUpgrade,
+            3, 0, 300, 500, "CurrencyEarningUpgradeNameText", "CurrencyEarningAmount", "CurrencyEarningProgressBarImage", "CurrencyEarningCostText", "CurrencyEarningUpgradeButton");
+
+        /* TODO: Refine those two upgrades because they are skills and not upgrades.
+         * 
+         * InitializePermanentUpgrade(PlayerPrefsConsts.BulletPenetrationPermanentUpgrade,
+            3, 0, 300, 500, "BulletPenetrationUpgradeNameText", "BulletPenetrationProgressBarImage", "BulletPenetrationCostText", "BulletPenetrationUpgradeButton");
+
+        InitializePermanentUpgrade(PlayerPrefsConsts.SprintDurationPermanentUpgrade,
+            3, 0, 300, 500, "SprintDurationUpgradeNameText", "SprintDurationProgressBarImage", "SprintDurationCostText", "SprintDurationUpgradeButton");
+        */
     }
 
-    private void InitializeMaxSpeedUpgrade()
+    private void InitializePermanentUpgrade(
+        string permanentUpgradeConst, 
+        int maximumPointsToUpgrade, 
+        int currentPoints, 
+        int costToUpgrade, 
+        int costIncreasePerUpgrade,
+        string buttonText,
+        string amount,
+        string buttonImage,
+        string costText,
+        string upgradeButton
+        )
     {
-        if (!PlayerPrefs.HasKey(PlayerPrefsConsts.MaxSpeedPermanentUpgrade))
+        if (!PlayerPrefs.HasKey(permanentUpgradeConst))
         {
-            PermanentUpgrade maxSpeedUpgrade = new PermanentUpgrade
+            PermanentUpgrade upgrade = new PermanentUpgrade
             {
-                _upgradeKey = PlayerPrefsConsts.MaxSpeedPermanentUpgrade,
-                _maximumPointsToUpgrade = 10,
-                _currentPoints = 0,
-                _costToUpgrade = 100,
-                _costIncreasePerUpgrade = 300
+                _upgradeKey = permanentUpgradeConst,
+                _maximumPointsToUpgrade = maximumPointsToUpgrade,
+                _currentPoints = currentPoints,
+                _costToUpgrade = costToUpgrade,
+                _costIncreasePerUpgrade = costIncreasePerUpgrade,
+                _upgradeAmount = Int32.Parse(GameObject.Find(amount).GetComponent<TextMeshProUGUI>().text.Substring(1)) // Exclude first character as it is a '+'
             };
 
-            string maxSpeedUpgradeJson = JsonUtility.ToJson(maxSpeedUpgrade);
-            PlayerPrefs.SetString(PlayerPrefsConsts.MaxSpeedPermanentUpgrade, maxSpeedUpgradeJson);
+            string upgradeJson = JsonUtility.ToJson(upgrade);
+            PlayerPrefs.SetString(permanentUpgradeConst, upgradeJson);
         }
 
         // Set UI elements for Speed Upgrade
-        upgradeUI.SetUIElements(PlayerPrefsConsts.MaxSpeedPermanentUpgrade,
-            GameObject.Find("MaxSpeedUpgradeNameText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxSpeedProgressBarImage").GetComponent<Image>(),
-            GameObject.Find("MaxSpeedCostText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxSpeedUpgradeButton").GetComponent<Button>());
-    }
-
-    private void InitializeMaxDamageUpgrade()
-    {
-        if (!PlayerPrefs.HasKey(PlayerPrefsConsts.MaxDamagePermanentUpgrade))
-        {
-            PermanentUpgrade maxDamageUpgrade = new PermanentUpgrade
-            {
-                _upgradeKey = PlayerPrefsConsts.MaxDamagePermanentUpgrade,
-                _maximumPointsToUpgrade = 4,
-                _currentPoints = 0,
-                _costToUpgrade = 100,
-                _costIncreasePerUpgrade = 500
-            };
-
-            string maxDamageUpgradeJson = JsonUtility.ToJson(maxDamageUpgrade);
-            PlayerPrefs.SetString(PlayerPrefsConsts.MaxDamagePermanentUpgrade, maxDamageUpgradeJson);
-        }
-
-        // Set UI elements for Speed Upgrade
-        upgradeUI.SetUIElements(PlayerPrefsConsts.MaxDamagePermanentUpgrade,
-            GameObject.Find("MaxDamageUpgradeNameText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxDamageProgressBarImage").GetComponent<Image>(),
-            GameObject.Find("MaxDamageCostText").GetComponent<TMP_Text>(),
-            GameObject.Find("MaxDamageUpgradeButton").GetComponent<Button>());
+        upgradeUI.SetUIElements(permanentUpgradeConst,
+            GameObject.Find(buttonText).GetComponent<TMP_Text>(),
+            GameObject.Find(buttonImage).GetComponent<Image>(),
+            GameObject.Find(costText).GetComponent<TMP_Text>(),
+            GameObject.Find(upgradeButton).GetComponent<Button>());
     }
 }

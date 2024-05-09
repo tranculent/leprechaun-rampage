@@ -16,29 +16,38 @@ public class PlayerInitializer : MonoBehaviour
     {
         InitializeUpgrade(PlayerPrefsConsts.MaxHealthPermanentUpgrade);
         InitializeUpgrade(PlayerPrefsConsts.MaxSpeedPermanentUpgrade);
-        // Add more upgrades as needed...
+        InitializeUpgrade(PlayerPrefsConsts.MaxDamagePermanentUpgrade);
+        InitializeUpgrade(PlayerPrefsConsts.MaxReloadSpeedPermanentUpgrade);
     }
 
     private void InitializeUpgrade(string upgradeKey)
     {
         PermanentUpgrade upgrade = LoadUpgradeData(upgradeKey);
-        int upgradeIncreaseMaxValue = (upgrade._currentPoints + 1) * 10; // +1 because it starts from zero
+        int upgradeIncreaseMaxValue = upgrade._upgradeAmount * upgrade._currentPoints;
         Player playerComponent = player.GetComponent<Player>();
         PlayerMovement playerMovementComponent = player.GetComponent<PlayerMovement>();
+        WeaponManager weaponManager = FindAnyObjectByType<WeaponManager>();
+
         if (upgrade != null)
         {
             // Apply upgrade data to player based on upgrade key
             switch (upgradeKey)
             {
                 case PlayerPrefsConsts.MaxHealthPermanentUpgrade:
-                    Debug.Log("Player health: " + playerComponent.health);
-                    Debug.Log("Upgrade increase max health value: " + upgradeIncreaseMaxValue);
                     // Apply max health upgrade data to player
-                    playerComponent.SetMaxHealth(playerComponent.health + upgradeIncreaseMaxValue); 
+                    playerComponent.SetMaxHealth(upgradeIncreaseMaxValue);
                     break;
                 case PlayerPrefsConsts.MaxSpeedPermanentUpgrade:
                     // Apply speed upgrade data to player
                     playerMovementComponent.SetMaxSpeed(playerMovementComponent.speed + upgradeIncreaseMaxValue);
+                    break;
+                case PlayerPrefsConsts.MaxDamagePermanentUpgrade:
+                    // Upgrade weapons damage
+                    weaponManager.UpgradeWeaponsDamage(upgradeIncreaseMaxValue);
+                    break;
+                case PlayerPrefsConsts.MaxReloadSpeedPermanentUpgrade:
+                    // Upgrade weapons damage
+                    weaponManager.UpgradeWeaponsReloadSpeed(upgradeIncreaseMaxValue);
                     break;
                 // Add cases for other upgrades as needed...
                 default:

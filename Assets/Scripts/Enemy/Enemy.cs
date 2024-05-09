@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,6 +11,7 @@ public class Enemy : MonoBehaviour
     public AudioClip footstepsSFX;
     public float footstepInterval = 0.5f;
     public float maxFootstepDistance = 10f;
+    public Canvas damagePopupCanvas;
 
     protected GameObject gameFlowManager;
     protected Transform player;
@@ -17,9 +19,15 @@ public class Enemy : MonoBehaviour
     protected bool isGrounded;
     protected NavMeshAgent agent;
     protected AudioSource audioSource;
+    protected Healthbar healthbar;
+    protected int maxHealth = 5;
+    protected List<DamagePopup> damagePopups = new List<DamagePopup>();
 
     void Start()
     {
+        maxHealth = health;
+        healthbar = GetComponentInChildren<Healthbar>();
+        healthbar.UpdateHealthBar(1, 1);
         agent = GetComponent<NavMeshAgent>();
         audioSource = GetComponent<AudioSource>();
         gameFlowManager = GameObject.FindGameObjectWithTag("GameFlowManager");
@@ -67,6 +75,11 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
+        healthbar.UpdateHealthBar(maxHealth, health);
+
+        // Instantiate a new damage popup
+        DamagePopupGenerator.current.CreatePopUp(transform.position, damageAmount.ToString(), Color.yellow);
+
         if (health <= 0)
         {
             Die();

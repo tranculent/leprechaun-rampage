@@ -24,12 +24,15 @@ public abstract class Gun : MonoBehaviour
     protected Camera playerCamera;
     protected bool isReloading;
     protected int maxAmmoSize;
+    protected Player player;
 
     public GameObject impactEffect; // Particle system or other impact effect
     public AudioClip impactSound;   // Sound to play on impact
 
     void Start()
     {
+        player = FindAnyObjectByType<Player>();
+        damage += player.damage;
         // Try to find the camera component in the parent GameObject
         playerCamera = FindAnyObjectByType<Player>().GetComponent<Camera>();
         isReloading = false;
@@ -117,6 +120,11 @@ public abstract class Gun : MonoBehaviour
         }
     }
 
+    public void UpgradeReloadSpeed(int reloadSpeed)
+    {
+        reloadTime += reloadSpeed;
+    }
+
     public bool HasAmmoLeft()
     {
         return currentAmmo > 0 || maxAmmo > 0;
@@ -125,6 +133,12 @@ public abstract class Gun : MonoBehaviour
     public void IncreaseDamage(int increaseAmount)
     {
         damage += increaseAmount;
+    }
+
+    public void IncreaseAmmoCapacity(int increaseAmount)
+    {
+        maxAmmo += increaseAmount;
+        maxAmmoSize = maxAmmo;
     }
 
     public abstract void Shoot();

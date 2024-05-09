@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -23,7 +24,8 @@ public class PlayerMovement : MonoBehaviour
     private Camera playerCamera;
     private Vector3 crouchScale;
     private Vector3 normalScale;
-
+    private bool isSliding = false;
+    private float slideDuration = 1f; // Adjust the duration of the slide
 
     private void Start()
     {
@@ -76,14 +78,66 @@ public class PlayerMovement : MonoBehaviour
         // Crouching
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            isCrouching = true;
-            Crouch(true);
+            // Check if already sprinting
+            if (isSprinting)
+            {
+                if (!isSliding)
+                {
+                    isSliding = true;
+                    StartCoroutine(SlideCoroutine());
+                }
+            }
+            else
+            {
+                isCrouching = true;
+                Crouch(true);
+            }
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl))
         {
-            isCrouching = false;
-            Crouch(false);
+            if (isSliding)
+            {
+                // Stop sliding if crouch key is released during slide
+                isSliding = false;
+            }
+            else
+            {
+                isCrouching = false;
+                Crouch(false);
+            }
         }
+    }
+
+    private IEnumerator SlideCoroutine()
+    {
+        // Lower the player's height
+        Vector3 startScale = transform.localScale;
+        Vector3 targetScale = new Vector3(startScale.x, startScale.y / 2, startScale.z);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < slideDuration)
+        {
+            transform.localScale = Vector3.Lerp(startScale, targetScale, elapsedTime / slideDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localScale = targetScale;
+
+        // Wait for a short duration to maintain the slide position
+        yield return new WaitForSeconds(0.1f);
+
+        // Restore the player's height
+        elapsedTime = 0f;
+        while (elapsedTime < slideDuration)
+        {
+            transform.localScale = Vector3.Lerp(targetScale, startScale, elapsedTime / slideDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localScale = startScale;
+        isSliding = false;
     }
 
     private void MovePlayer()
@@ -186,10 +240,12 @@ public class PlayerMovement : MonoBehaviour
     public void IncreaseMovementSpeed(int increaseAmount)
     {
         speed += increaseAmount;
+        originalSpeed = speed;
     }
 
     public void SetMaxSpeed(float newSpeed)
     {
         speed = newSpeed;
+        originalSpeed = newSpeed;
     }
 }

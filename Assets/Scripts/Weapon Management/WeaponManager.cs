@@ -37,7 +37,6 @@ public class WeaponManager : MonoBehaviour
 
     void SwitchWeapon(int index)
     {
-        Debug.Log(weapons.Length);
         // Disable all weapons
         foreach (GameObject weapon in weapons)
         {
@@ -48,13 +47,24 @@ public class WeaponManager : MonoBehaviour
         weapons[index].SetActive(true);
     }
 
-    public void UpgradeWeapons(int damageAmount)
+    public void UpgradeWeaponsDamage(int damageAmount)
     {
         if (weapons != null)
         {
             foreach (GameObject weapon in weapons)
             {
                 weapon.GetComponent<Gun>().IncreaseDamage(damageAmount);
+            }
+        }
+    }
+
+    public void UpgradeWeaponsReloadSpeed(int reloadSpeed)
+    {
+        if (weapons != null)
+        {
+            foreach (GameObject weapon in weapons)
+            {
+                weapon.GetComponent<Gun>().UpgradeReloadSpeed(reloadSpeed);
             }
         }
     }

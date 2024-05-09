@@ -51,7 +51,7 @@ public class EnemySpawner : MonoBehaviour
             List<GameObject> enemyPrefabs = new List<GameObject>();
             float randomValue = Random.value;
 
-            if (randomValue < 0.99f)
+            if (randomValue < 1)
             {
                 enemyPrefabs.Add(meleeEnemyPrefabs);
             }

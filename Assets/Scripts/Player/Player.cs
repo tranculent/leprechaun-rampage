@@ -6,12 +6,12 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
-    public int health = 5;
+    public int health;
     public int speedPickup = 10;
     public GameObject playerHpTextField;
     public Camera mainCamera;
     public GameOverManager gameOverManager;
-    public float damage = 10f;
+    public int damage = 10;
 
     private Gun activeGun;
     private PlayerMovement playerMovement;
@@ -19,10 +19,9 @@ public class Player : MonoBehaviour
     private bool isInvincible;
     private int level = 1;
 
-    public void Awake()
+    public void Start()
     {
         GetComponent<Camera>().GetComponent<AudioListener>().enabled = true;
-        SetPlayerHpTextField(health);
         hasSpeedPickupActive = false;
         playerMovement = gameObject.GetComponent<PlayerMovement>();
     }
@@ -164,9 +163,11 @@ public class Player : MonoBehaviour
         SetPlayerHpTextField(health);
     }
 
-    public void IncreaseDamage(float increaseAmount)
+    public void IncreaseDamage(int increaseAmount)
     {
         damage += increaseAmount;
+
+        FindAnyObjectByType<WeaponManager>().UpgradeWeaponsDamage(increaseAmount);
     }
 
     public int GetLevel()
@@ -174,9 +175,10 @@ public class Player : MonoBehaviour
         return level;
     }
 
-    public void SetMaxHealth(int newMaxHp)
+    public void SetMaxHealth(int healthUpgradeAmount)
     {
-        health = newMaxHp;
+        Debug.Log(health);
+        health += healthUpgradeAmount;
         SetPlayerHpTextField(health);
     }
 }

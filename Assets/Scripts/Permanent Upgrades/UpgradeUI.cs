@@ -54,6 +54,7 @@ public class UpgradeUI : MonoBehaviour
 
     public void OnUpgradeButtonClick(string upgradeKey)
     {
+        Debug.Log(upgradeKey);
         if (upgradeUIElements.ContainsKey(upgradeKey))
         {
             UpgradeUIElements uiElements = upgradeUIElements[upgradeKey];
